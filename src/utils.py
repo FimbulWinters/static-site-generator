@@ -7,7 +7,7 @@ import re
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
     for node in old_nodes:
-        if node.text_type != TextType.Text:
+        if node.text_type != TextType.TEXT:
             new_nodes.append(node)
             continue
         split_nodes = []
@@ -18,7 +18,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             if sections[i] == "":
                 continue
             if i % 2 == 0:
-                split_nodes.append(TextNode(sections[i], TextType.Text))
+                split_nodes.append(TextNode(sections[i], TextType.TEXT))
             else:
                 split_nodes.append(TextNode(sections[i], text_type))
         new_nodes.extend(split_nodes)
@@ -35,6 +35,8 @@ def extract_markdown_links(text):
 
 def split_nodes_image(old_nodes):
     new_nodes = []
+
+    print("beans!!!!!!!!!")
 
     for node in old_nodes:
         if not node.text:
@@ -59,7 +61,7 @@ def split_nodes_image(old_nodes):
                 new_nodes.append(TextNode(sections[i], TextType.TEXT))
             elif i % 3 == 1:
                 url = sections[i + 1]
-                new_nodes.append(TextNode(sections[i], TextType.IMAGE, url))
+                new_nodes.append(TextNode(sections[i], TextType.IMAGES, url))
 
     return new_nodes
 

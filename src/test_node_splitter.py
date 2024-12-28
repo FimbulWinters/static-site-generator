@@ -17,7 +17,7 @@ class TestNodeSplitter(unittest.TestCase):
         self.assertEqual(result[0].text, "Hello ")
         self.assertEqual(result[0].text_type, TextType.TEXT)
         self.assertEqual(result[1].text, "alt text")
-        self.assertEqual(result[1].text_type, TextType.IMAGE)
+        self.assertEqual(result[1].text_type, TextType.IMAGES)
         self.assertEqual(result[1].url, "image.jpg")
         self.assertEqual(result[2].text, " world")
         self.assertEqual(result[2].text_type, TextType.TEXT)
@@ -78,7 +78,7 @@ class TestNodeSplitter(unittest.TestCase):
         """Test that non-text nodes are preserved"""
         nodes = [
             TextNode("![img](test.jpg)", TextType.TEXT),
-            TextNode("Already an image", TextType.IMAGE, "existing.jpg")
+            TextNode("Already an image", TextType.IMAGES, "existing.jpg")
         ]
         result = split_nodes_image(nodes)
 

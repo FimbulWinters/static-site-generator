@@ -4,12 +4,12 @@ from leaf_node import LeafNode
 
 
 class TextType(Enum):
-    Text = "Text"
-    Bold = "Bold"
-    Italic = "Italic"
-    Code = "Code"
-    Links = "Links"
-    Images = "Images"
+    TEXT = "Text"
+    BOLD = "Bold"
+    ITALIC = "Italic"
+    CODE = "Code"
+    LINKS = "Links"
+    IMAGES = "Images"
 
 
 class TextNode():
@@ -28,17 +28,17 @@ class TextNode():
 
     def text_node_to_html_node(self):
         match(self.text_type):
-            case TextType.Text:
+            case TextType.TEXT:
                 return LeafNode(None, self.text)
-            case TextType.Bold:
+            case TextType.BOLD:
                 return LeafNode("b", self.text)
-            case TextType.Italic:
+            case TextType.ITALIC:
                 return LeafNode('i', self.text)
-            case TextType.Code:
+            case TextType.CODE:
                 return LeafNode("code", self.text)
-            case TextType.Links:
+            case TextType.LINKS:
                 return LeafNode("a", self.text, {"href": self.url})
-            case TextType.Images:
+            case TextType.IMAGES:
                 return LeafNode("img", None, {"src": self.url, "alt": self.value})
             case _:
                 raise ValueError("No or incorrect text type given")
