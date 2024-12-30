@@ -66,4 +66,53 @@ def split_nodes_image(old_nodes):
     return new_nodes
 
 
-# def split_nodes_link(old_nodes):
+def split_nodes_link(old_nodes):
+    new_nodes = []
+
+    for node in old_nodes:
+        if not node.text:
+            continue
+
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+
+        links = extract_markdown_links(node.text)
+
+        if not links:
+            new_nodes.append(node)
+            continue
+
+        sections = re.split(r"\[([^\[\]]*)\]\(([^\(\)]*)\)", node.text)
+
+        for i in range(len(sections)):
+            if not sections[i]:  # Skip empty strings
+                continue
+            if i % 3 == 0:
+                new_nodes.append(TextNode(sections[i], TextType.TEXT))
+            elif i % 3 == 1:
+                url = sections[i + 1]
+                new_nodes.append(TextNode(sections[i], TextType.LINKS, url))
+
+    return new_nodes
+
+
+def text_to_textnodes(text):
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes
+
+
+def markdown_to_blocks(markdown):
+    blocks = markdown.split("\n\n")
+    stripped_blocks = []
+    for block in blocks:
+        if block == "":
+            continue
+        block = block.strip()
+        stripped_blocks.append(block)
+    return stripped_blocks

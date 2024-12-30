@@ -2,7 +2,7 @@ import unittest
 
 
 from textnode import TextNode, TextType
-from utils import split_nodes_delimiter
+from utils import split_nodes_delimiter, text_to_textnodes
 
 
 class TestInlineMarkdown(unittest.TestCase):
@@ -83,6 +83,27 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode(" word", TextType.TEXT),
             ],
             new_nodes,
+        )
+
+    def test_text_to_textnodes(self):
+        nodes = text_to_textnodes(
+            "This is **text** with an *italic* word and a `code block` and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)"
+        )
+        self.assertListEqual(
+            [
+                TextNode("This is ", TextType.TEXT),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.TEXT),
+                TextNode("image", TextType.IMAGES,
+                         "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(" and a ", TextType.TEXT),
+                TextNode("link", TextType.LINKS, "https://boot.dev"),
+            ],
+            nodes,
         )
 
 
