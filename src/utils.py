@@ -116,3 +116,24 @@ def markdown_to_blocks(markdown):
         block = block.strip()
         stripped_blocks.append(block)
     return stripped_blocks
+
+
+def block_to_block_type(markdown):
+    heading = r'^(#{1,6})\s+(.+?)(?:\s+#*)?$'
+    code = r'```.*?```'
+    quote = r'(?:^>.*$\n?)+'
+    unordered_list = r'(?:(?:^|\n)[*-]\s+.*(?:\n|$))+'
+    ordered_list = r'(?:(?:^|\n)\d+\. +.*(?:\n|$))+'
+
+    if re.match(heading, markdown):
+        return "heading"
+    elif re.match(code, markdown):
+        return "code"
+    elif re.match(quote, markdown):
+        return "quote"
+    elif re.match(unordered_list, markdown):
+        return "unordered_list"
+    elif re.match(ordered_list, markdown):
+        return "ordered_list"
+    else:
+        return "paragraph"

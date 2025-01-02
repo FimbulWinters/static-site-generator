@@ -1,6 +1,6 @@
 import unittest
 
-from utils import markdown_to_blocks
+from utils import block_to_block_type, markdown_to_blocks
 
 
 class TestMarkdownToHTML(unittest.TestCase):
@@ -46,6 +46,18 @@ This is the same paragraph on a new line
                 "* This is a list\n* with items",
             ],
         )
+
+    def test_block_to_block_type_ul(self):
+        md = "* This is a list\n* with items"
+        actual = block_to_block_type(md)
+        expected = "unordered_list"
+        self.assertEqual(expected, actual)
+
+    def test_block_to_block_type_ol(self):
+        md = "1. This is a list\n2. with items"
+        actual = block_to_block_type(md)
+        expected = "ordered_list"
+        self.assertEqual(expected, actual)
 
 
 if __name__ == "__main__":
