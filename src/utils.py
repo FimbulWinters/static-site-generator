@@ -1,3 +1,4 @@
+from parent_node import ParentNode
 from textnode import TextNode, TextType
 import re
 
@@ -35,9 +36,6 @@ def extract_markdown_links(text):
 
 def split_nodes_image(old_nodes):
     new_nodes = []
-
-    print("beans!!!!!!!!!")
-
     for node in old_nodes:
         if not node.text:
             continue
@@ -121,7 +119,7 @@ def markdown_to_blocks(markdown):
 def block_to_block_type(markdown):
     heading = r'^(#{1,6})\s+(.+?)(?:\s+#*)?$'
     code = r'```.*?```'
-    quote = r'(?:^>.*$\n?)+'
+    quote = r'^> .*\n( *> .*\n)*'
     unordered_list = r'(?:(?:^|\n)[*-]\s+.*(?:\n|$))+'
     ordered_list = r'(?:(?:^|\n)\d+\. +.*(?:\n|$))+'
 
@@ -137,3 +135,104 @@ def block_to_block_type(markdown):
         return "ordered_list"
     else:
         return "paragraph"
+
+
+def markdown_to_html_node(md):
+    blocks = markdown_to_blocks(md)
+    children = []
+    for block in blocks:
+        if block == "":
+            continue
+        html_node = ""
+        type = block_to_block_type(block)
+        match type:
+            case "heading":
+                html_node = heading_to_html_node(block)
+                children.append(html_node)
+            case "code":
+                html_node = code_to_html(block)
+                children.append(html_node)
+            case "quote":
+                html_node = quote_to_html(block)
+                children.append(html_node)
+            case "unordered_list":
+                html_node = ul_to_html(block)
+                children.append(html_node)
+            case "ordered_list":
+                html_node = ol_to_html(block)
+                children.append(html_node)
+            case "paragraph":
+                html_node = paragraph_to_html(block)
+                children.append(html_node)
+    return ParentNode("div", children)
+
+
+def text_to_children(text):
+    t_nodes = text_to_textnodes(text)
+    children = []
+    for text_node in t_nodes:
+        html = text_node.text_node_to_html_node()
+        children.append(html)
+    return children
+
+
+def heading_to_html_node(block):
+    level = 0
+    for character in block:
+        if character == "#":
+            level += 1
+        else:
+            break
+    if level + 1 >= len(block):
+        raise ValueError("invalid heading")
+    text = block[level + 1:]
+    children = text_to_children(text)
+    return ParentNode(f"h{level}", children)
+
+
+def code_to_html(block):
+    text = block[4:-3]
+    children = text_to_children(text)
+    code = ParentNode("code", children)
+    return ParentNode("pre", [code])
+
+
+def quote_to_html(block):
+    divided = block.split("\n")
+    lines = []
+    for item in divided:
+
+        # if not item.startswith(">"):
+        #     raise ValueError("invalid quote")
+        # print(f"formatted: {item.lstrip(" > ").strip()}")
+        lines.append(item.lstrip(" > ").strip())
+    quote = " ".join(lines)
+    children = text_to_children(quote)
+    return ParentNode("blockquote", children)
+
+
+def ul_to_html(block):
+    list_items = block.split("\n")
+    html = []
+    for item in list_items:
+        text = item[2:]
+        children = text_to_children(text)
+        html.append(ParentNode("li", children))
+    return ParentNode("ul", html)
+
+
+def ol_to_html(block):
+    list_items = block.split("\n")
+    html = []
+    for item in list_items:
+        text = item[2:]
+        children = text_to_children(text)
+        html.append(ParentNode("li", children))
+    return ParentNode("ol", html)
+
+
+def paragraph_to_html(block):
+    lines = block.split("\n")
+    paragraph = " ".join(lines)
+    children = text_to_children(paragraph)
+    return ParentNode("p", children)
