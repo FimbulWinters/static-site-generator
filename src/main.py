@@ -22,7 +22,6 @@ def generate_page(from_path, template_path, dest_path):
     template_amended = template_contents.replace(
         "Title", title).replace("Content", html).replace("{", "").replace("}", "")
 
-    print(template_amended)
     if os.path.exists(dest_path):
         os.remove(dest_path)
         replacement = open(dest_path, 'x')
@@ -37,13 +36,26 @@ def generate_page(from_path, template_path, dest_path):
     template_file.close()
 
 
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    if not os.path.exists(dir_path_content):
+        os.mkdir(dest_dir_path)
+    for node in os.listdir(dir_path_content):
+        path = os.path.join(dir_path_content, node)
+        dest_path = os.path.join(dest_dir_path, node.replace("md", "html"))
+
+        if os.path.isfile(path):
+            generate_page(path, template_path, dest_path)
+        else:
+            os.mkdir(dest_path)
+            generate_pages_recursive(path, template_path, dest_path)
+
+
 def copy_static(source, dest, count):
     if count == 0 and os.path.exists(dest):
         shutil.rmtree(dest)
         count += 1
 
     if not os.path.exists(dest):
-        print("no")
         os.mkdir(dest)
 
     for item in os.listdir(source):
@@ -64,8 +76,10 @@ def main():
 
     copy_static('./static', './public', 0)
 
-    generate_page('./content/index.md', './template.html',
-                  './public/index.html')
+    generate_pages_recursive('./content', './template.html', './public')
+
+    # generate_page('./content/index.md', './template.html',
+    #               './public/index.html')
 
 
 main()

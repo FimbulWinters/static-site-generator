@@ -117,7 +117,6 @@ def markdown_to_blocks(markdown):
 
 
 def block_to_block_type(markdown):
-    print(f"markdown: {markdown.strip()}")
     heading = r'^(#{1,6})\s+(.+?)(?:\s+#*)?$'
     code = r'```.*?```'
     quote = r'^> .*\n( *> .*\n)*'
@@ -129,7 +128,6 @@ def block_to_block_type(markdown):
     elif re.match(code, markdown):
         return "code"
     elif re.match(quote, markdown.lstrip()):
-        print("quote found")
         return "quote"
     elif re.match(unordered_list, markdown):
         return "unordered_list"
@@ -205,10 +203,9 @@ def quote_to_html(block):
     divided = block.split("\n")
     lines = []
     for item in divided:
-        print(item)
 
-        # if not item.startswith(">"):
-        #     raise ValueError("invalid quote")
+        if not item.startswith(">"):
+            raise ValueError("invalid quote")
         # print(f"formatted: {item.lstrip(" > ").strip()}")
         lines.append(item.lstrip("> ").strip())
     quote = " ".join(lines)
@@ -230,9 +227,7 @@ def ol_to_html(block):
     list_items = block.split("\n")
     html = []
     for item in list_items:
-        print(f"item: {item}")
         text = item[2:]
-        print(f"text: {text.strip()}")
         children = text_to_children(text.strip())
         html.append(ParentNode("li", children))
     return ParentNode("ol", html)
@@ -249,7 +244,6 @@ def extract_title(md):
     h1_pattern = r"^# .*$"  # Regex to match H1 headings
     match = re.search(h1_pattern, md, flags=re.MULTILINE)
     if match:
-        print(match.group(0))
         return match.group(0).strip('# ').rstrip()
     else:
         raise Exception("No h1 found")

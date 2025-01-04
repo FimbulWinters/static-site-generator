@@ -106,7 +106,6 @@ This is another paragraph with *italic* text and ```code``` here
 
         node = markdown_to_html_node(md)
         html = node.to_html()
-        print(f"test html: {html}")
         self.assertEqual(
             html,
             "<div><ul><li>This is a list</li><li>with items</li><li>and more items</li></ul><ol><li>This is an ordered list</li><li>with items</li><li>and more items</li></ol></div>",
