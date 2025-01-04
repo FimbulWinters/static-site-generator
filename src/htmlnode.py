@@ -1,5 +1,5 @@
 class HTMLNode():
-    def __init__(self, tag = None, value = None, children = None, props = None):
+    def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag
         self.value = value
         self.children = children
@@ -7,9 +7,10 @@ class HTMLNode():
 
     def to_html(self):
         raise NotImplementedError("Not implemented")
-    
+
     def props_to_html(self):
-         return f' href="{self.props["href"]}" target="_{self.props["target"]}"'
-    
+        target = self.props.get('target', 'blank')
+        return f' href="{self.props["href"]}" target="_{target}"'
+
     def __repr__(self):
         return f"HTMLNode(tag={self.tag}, value={self.value}, children={self.children}, props={self.props})"
